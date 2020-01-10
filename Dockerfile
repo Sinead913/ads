@@ -1,8 +1,6 @@
-FROM ubuntu:18.04
-RUN apt-get update -y
-RUN apt-get install -y python3 python3-pip
-COPY ./ ./app
-WORKDIR ./app
-RUN pip3 install -r requirements.txt
-ENTRYPOINT ["python3"]
-CMD ["app.py"]
+FROM python:3
+ADD / /app
+WORKDIR /app
+RUN apt-get update
+RUN pip install -r requirements.txt
+CMD python app.py
