@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, json, Response
 
 app = Flask(__name__)
 
@@ -22,14 +22,21 @@ adverts = [
 
 @app.route('/')
 def get_all_ads():
-    # return jsonify(adverts)
-    return 'HELLO'
+    j = json.dumps(adverts)
+    rep = Response(j)
+    rep.headers['Content-Type'] = "application/json"
+    rep.headers['Access-Control-Allow-Origin'] = '*'
+    return rep
 
 @app.route('/adverts/<string:key>', methods=['GET'])
 def get_ads(key):
     for advert in adverts:
         if(key == advert["keyword"]):
-            return key
+            j = json.dumps(advert)
+            rep = Response(j)
+            rep.headers['Content-Type'] = "application/json"
+            rep.headers['Access-Control-Allow-Origin'] = '*'
+            return rep
     return "User not found", 404
 
 if __name__ == '__main__':
