@@ -28,7 +28,12 @@ class Advert(Resource):
             if(name == advert["keyword"]):
                 return advert, 200
         return "User not found", 404
+    
+class Default(Resource):
+    def get(self):
+        return "User not found", 404
 
+api.add_resource(Default, "/")
 api.add_resource(Advert, "/advert/<string:name>")
 
 app.run(debug=True)
