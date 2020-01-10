@@ -1,8 +1,6 @@
-from flask import Flask
-from flask_restful import Api, Resource, reqparse
+from flask import Flask, jsonify
 
 app = Flask(__name__)
-api = Api(app)
 
 adverts = [
     {
@@ -22,18 +20,16 @@ adverts = [
     }
 ]
 
-class Advert(Resource):
-    def get(self, name):
-        for advert in adverts:
-            if(name == advert["keyword"]):
-                return advert, 200
-        return "User not found", 404
-    
-class Default(Resource):
-    def get(self):
-        return "User not found", 404
+@app.route('/')
+def get_all_ads():
+    return jsonify(adverts)
 
-api.add_resource(Default, "/")
-api.add_resource(Advert, "/advert/<string:name>")
+@app.route('/adverts/<string:key>', methods=['GET'])
+def get_ads(key):
+    for advert in adverts:
+        if(key == advert["keyword"]):
+            return advert, 200
+    return "User not found", 404
 
-app.run(debug=True)
+if __name__ == '__main__':
+    app.run(debug=False, host='0.0.0.0')
