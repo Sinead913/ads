@@ -22,7 +22,10 @@ adverts = [
 
 @app.route('/')
 def get_all_ads():
-    j = json.dumps(adverts)
+    ads = []
+    for advert in adverts:
+        ads.append(advert["advert"])
+    j = json.dumps(ads)
     rep = Response(j)
     rep.headers['Content-Type'] = "application/json"
     rep.headers['Access-Control-Allow-Origin'] = '*'
@@ -30,14 +33,15 @@ def get_all_ads():
 
 @app.route('/adverts/<string:key>', methods=['GET'])
 def get_ads(key):
+    ads=[]
     for advert in adverts:
         if(key == advert["keyword"]):
-            j = json.dumps(advert)
-            rep = Response(j)
-            rep.headers['Content-Type'] = "application/json"
-            rep.headers['Access-Control-Allow-Origin'] = '*'
-            return rep
-    return "User not found", 404
+            ads.append(advert["advert"])
+    j = json.dumps(ads)
+    rep = Response(j)
+    rep.headers['Content-Type'] = "application/json"
+    rep.headers['Access-Control-Allow-Origin'] = '*'
+    return rep
 
 if __name__ == '__main__':
     app.run(debug=False, host='0.0.0.0')
