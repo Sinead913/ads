@@ -1,4 +1,4 @@
-from flask import Flask, json, Response
+from flask import Flask, request, json, Response
 
 app = Flask(__name__)
 
@@ -21,27 +21,32 @@ adverts = [
 ]
 
 @app.route('/')
-def get_all_ads():
-    ads = []
-    for advert in adverts:
-        ads.append(advert["advert"])
-    j = json.dumps(ads)
-    rep = Response(j)
-    rep.headers['Content-Type'] = "application/json"
-    rep.headers['Access-Control-Allow-Origin'] = '*'
-    return rep
-
-@app.route('/adverts/<string:key>', methods=['GET'])
-def get_ads(key):
+def get_ads():
+    
+    output = {
+    "error": False,
+    "ads": ""
+    }
     ads=[]
-    for advert in adverts:
-        if(key == advert["keyword"]):
-            ads.append(advert["advert"])
-    j = json.dumps(ads)
-    rep = Response(j)
-    rep.headers['Content-Type'] = "application/json"
-    rep.headers['Access-Control-Allow-Origin'] = '*'
-    return rep
+    
+    try:
+        searchText = request.args.get('search')
+    
+        for advert in adverts:
+            if(searchText == advert["keyword"]):
+                ads.append(advert["advert"])
+    except Exception as err:
+        newOutput = { "error": str(err), "ads": "" }
+        output.update(newOutput)
+    else:    
+        newOutput = { "error": False, "ads": ads }
+        output.update(newOutput)
+    finally:
+        j = json.dumps(output)
+        rep = Response(j)
+        rep.headers['Content-Type'] = "application/json"
+        rep.headers['Access-Control-Allow-Origin'] = '*'
+        return rep
 
 if __name__ == '__main__':
     app.run(debug=False, host='0.0.0.0')
