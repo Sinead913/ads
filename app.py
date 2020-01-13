@@ -38,7 +38,7 @@ def get_ads():
         newOutput = { "error": str(err), "ads": "" }
         output.update(newOutput)
     else:    
-        newOutput = { "error": False, "ads": results }
+        newOutput = { "error": False, "ads": results[0] }
         output.update(newOutput)
     finally:
         j = json.dumps(output)
