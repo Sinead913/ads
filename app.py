@@ -25,6 +25,7 @@ def get_ads():
     "error": False,
     "ads": ""
     }
+    ads=[]
     
     try:
         searchText = request.args.get('search')
@@ -33,12 +34,13 @@ def get_ads():
 #                 "SELECT advert FROM advert WHERE keyword=:search", search=searchText
                 "SELECT advert FROM advert WHERE keyword='test'",
             ).fetchall()
-    
+            for row in results:
+                ads.append(row[0])
     except Exception as err:
         newOutput = { "error": str(err), "ads": "" }
         output.update(newOutput)
     else:    
-        newOutput = { "error": False, "ads": results[0] }
+        newOutput = { "error": False, "ads": ads }
         output.update(newOutput)
     finally:
         j = json.dumps(output)
