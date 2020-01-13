@@ -30,8 +30,9 @@ def get_ads():
     try:
         searchText = request.args.get('search')
         with db.connect() as conn:
+            stmt = sqlalchemy.text("SELECT advert FROM advert WHERE keyword=:search")
             results = conn.execute(
-                "SELECT advert FROM advert WHERE keyword=:search", search=searchText
+                stmt, search=searchText
             ).fetchall()
             for row in results:
                 ads.append(row[0])
