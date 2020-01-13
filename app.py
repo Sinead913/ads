@@ -31,8 +31,7 @@ def get_ads():
         searchText = request.args.get('search')
         with db.connect() as conn:
             results = conn.execute(
-#                 "SELECT advert FROM advert WHERE keyword=:search", search=searchText
-                "SELECT advert FROM advert WHERE keyword='test'",
+                "SELECT advert FROM advert WHERE keyword=:search", search=searchText
             ).fetchall()
             for row in results:
                 ads.append(row[0])
