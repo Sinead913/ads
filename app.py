@@ -1,24 +1,21 @@
 from flask import Flask, request, json, Response
+import sqlalchemy
 
 app = Flask(__name__)
 
-adverts = [
-    {
-        "advertid": 1,
-        "keyword": 'network',
-        "advert": "Network Engineer Job available in Belfast!"
-    },
-    {
-        "advertid": 2,
-        "keyword": 'network',
-        "advert": "These are the best networks in the world!"
-    },
-    {
-        "advertid": 3,
-        "keyword": 'test',
-        "advert": "Testing role available in Belfast IT company!"
-    }
-]
+db = sqlalchemy.create_engine(
+    sqlalchemy.engine.url.URL(
+        drivername="mysql+pymysql",
+        username="root",
+        password="password",
+        database="Adverts",
+        query={"unix_socket": "/cloudsql/{}".format("cloudcomputing3032:us-central1:ads-index")},
+    ),
+    pool_size=5,
+    max_overflow=2,
+    pool_timeout=30,  # 30 seconds
+    pool_recycle=1800,  # 30 minutes
+)
 
 @app.route('/')
 def get_ads():
@@ -27,19 +24,19 @@ def get_ads():
     "error": False,
     "ads": ""
     }
-    ads=[]
     
     try:
         searchText = request.args.get('search')
+        with db.connect() as conn:
+            results = conn.execute(
+                "SELECT advert FROM advert WHERE keyword=:search", search=searchText
+            ).fetchall()
     
-        for advert in adverts:
-            if(searchText == advert["keyword"]):
-                ads.append(advert["advert"])
     except Exception as err:
         newOutput = { "error": str(err), "ads": "" }
         output.update(newOutput)
     else:    
-        newOutput = { "error": False, "ads": ads }
+        newOutput = { "error": False, "ads": results }
         output.update(newOutput)
     finally:
         j = json.dumps(output)
